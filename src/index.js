@@ -7,7 +7,7 @@ import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
 import { searchRobots } from './reducers';
 import 'tachyons';
-// import { robots } from "./robots";
+import { robots } from "./robots";
 
 const store = createStore(searchRobots)
 

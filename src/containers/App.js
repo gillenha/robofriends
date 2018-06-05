@@ -1,15 +1,29 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import './App.css';
 
+import { setSearchField } from '../actions';
+
+const mapStateToProps = state => {
+	return {
+		searchField: state.searchField
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+	}
+}
+
 class App extends Component {
 	constructor() {
 		super()
 		this.state = {
-			robots: [],
-			searchfield: ''
+			robots: []
 		}
 	}
 
@@ -19,30 +33,29 @@ class App extends Component {
 			.then(users => {this.setState({ robots: users})});
 	}
 
-	onSearchChange = (event) => {
-		this.setState({ searchfield: event.target.value })
-	}
+// On search change is coming down as a prop, we don't need to declare it as a method of app.js
+	// onSearchChange = (event) => {
+	// 	this.setState({ searchfield: event.target.value })
+	// }
 
 	render() {
-		const filteredRobots = this.state.robots.filter(robots => {
-			return robots.name.toLowerCase().includes(this.state.searchfield.toLowerCase())
+		const { robots } = this.state;
+		const { searchField, onSearchChange } = this.props;
+		const filteredRobots = robots.filter(robot => {
+			return robot.name.toLowerCase().includes(searchField.toLowerCase())
 		})
-		if (this.state.robots.length === 0) {
-			return <h1>Loading...</h1>
-		} else {
-		return (
+		return !robots.length ?
+			<h1>Loading</h1> :
+			(
 			<div className="tc">
 				<h1 className="f1">RoboFriends</h1>
-				<SearchBox searchChange={this.onSearchChange}/>
+				<SearchBox searchChange={onSearchChange}/>
 				<Scroll>
 					<CardList robots={filteredRobots}/>
 				</Scroll>
 			</div>
-
-		);			
-		}
-
+			);			
 	}
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
